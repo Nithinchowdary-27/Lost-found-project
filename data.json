@@ -1,0 +1,23 @@
+[
+    {
+        "type": "lost",
+        "name": "wallet",
+        "description": "brown color and in that card available",
+        "contact": "1234567890",
+        "image": "Image 24-04-26 at 9.50\u202fAM.jpeg"
+    },
+    {
+        "type": "lost",
+        "name": "wallet",
+        "description": "brown color and in that card available",
+        "contact": "1234567890",
+        "image": "Image 19-02-26 at 10.48\u202fPM.jpeg"
+    },
+    {
+        "type": "found",
+        "name": "wallet",
+        "description": "brown color and in that card available",
+        "contact": "1234567890",
+        "image": "Image 24-04-26 at 9.50\u202fAM.jpeg"
+    }
+]

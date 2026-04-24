@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lost & Found Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            background: white;
+            color: black;
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        a {
+            margin: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🔍 Lost & Found Portal</h1>
+
+<div class="box">
+
+    <h3>Add Item</h3>
+
+    <form method="POST" action="/add">
+
+        <select name="type">
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+        </select><br>
+
+        <input type="text" name="name" placeholder="Item Name"><br>
+        <input type="text" name="description" placeholder="Description"><br>
+        <input type="text" name="contact" placeholder="Contact"><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <hr>
+
+    <a href="/lost">View Lost Items</a><br>
+    <a href="/found">View Found Items</a><br>
+    <a href="/logout">Logout</a>
+
+</div>
+
+</body>
+</html>

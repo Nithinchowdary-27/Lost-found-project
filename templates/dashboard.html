@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lost & Found</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(12px);
+}
+
+.navbar h2 {
+    letter-spacing: 1px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    color: #00e6ff;
+}
+
+/* Container */
+.container {
+    width: 92%;
+    margin: auto;
+    margin-top: 25px;
+}
+
+/* FORM */
+.form-box {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    margin-bottom: 25px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.12);
+    padding: 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transition: 0.3s;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Badge */
+.badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.lost {
+    background: red;
+}
+
+.found {
+    background: green;
+}
+
+/* Delete */
+.delete {
+    display: inline-block;
+    margin-top: 10px;
+    color: #ff4d4d;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.delete:hover {
+    color: white;
+}
+
+/* Title */
+.title {
+    margin-bottom: 15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>🔍 Lost & Found</h2>
+    <div>
+        <a href="/lost">Lost</a>
+        <a href="/found">Found</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- FORM -->
+    <div class="form-box">
+        <h3>Add Item</h3>
+
+        <form method="POST" action="/add" enctype="multipart/form-data">
+
+            <select name="type">
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+            </select>
+
+            <input type="text" name="name" placeholder="Item Name" required>
+            <input type="text" name="description" placeholder="Description" required>
+            <input type="text" name="contact" placeholder="Contact" required>
+
+            <input type="file" name="image">
+
+            <button>Add Item</button>
+        </form>
+    </div>
+
+    <!-- ITEMS -->
+    <h3 class="title">All Items</h3>
+
+    <div class="grid">
+        {% for item in items %}
+            <div class="card">
+
+                <!-- Badge -->
+                <div class="badge {{ item.type }}">
+                    {{ item.type.upper() }}
+                </div>
+
+                {% if item.image %}
+                    <img src="/uploads/{{ item.image }}">
+                {% endif %}
+
+                <h4>{{ item.name }}</h4>
+                <p>{{ item.description }}</p>
+                <p>📞 {{ item.contact }}</p>
+
+                <a class="delete" href="/delete/{{ loop.index0 }}" onclick="return confirm('Delete this item?')">
+                    🗑 Delete
+                </a>
+
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

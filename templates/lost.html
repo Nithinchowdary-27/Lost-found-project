@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Lost Items</h2>
+
+{% for item in items %}
+    <div>
+        <p><b>{{ item.name }}</b></p>
+        <p>{{ item.description }}</p>
+        <p>{{ item.contact }}</p>
+
+        {% if item.image %}
+            <img src="/uploads/{{ item.image }}" width="150">
+        {% endif %}
+    </div>
+    <hr>
+{% else %}
+    <p>No lost items</p>
+{% endfor %}
+
+<a href="/dashboard">Back</a>
+
+</body>
+</html>
