@@ -4,7 +4,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect("/tmp/database.db")
         c = conn.cursor()
 
         c.execute("SELECT * FROM users")
