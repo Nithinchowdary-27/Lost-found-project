@@ -1,140 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Lost & Found Dashboard</title>
-
+<title>Dashboard</title>
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 40px;
-}
-
-.logout {
-    background: white;
-    color: black;
-    padding: 8px 15px;
-    border-radius: 20px;
-    text-decoration: none;
-}
-
-.container {
-    width: 90%;
-    margin: auto;
-}
-
-.card {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 15px;
-}
-
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: none;
-}
-
-button {
-    background: #00f2fe;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.item {
-    background: rgba(255,255,255,0.2);
-    padding: 10px;
-    border-radius: 10px;
-    margin: 10px 0;
-}
-
-.delete {
-    color: red;
-    text-decoration: none;
-}
+body{font-family:Arial;background:#f0f0f0}
+.card{background:white;padding:20px;margin:20px;border-radius:10px}
+.grid{display:flex;gap:20px}
 </style>
-
 </head>
-
 <body>
 
-<div class="header">
-    <h2>🔍 Lost & Found Portal</h2>
-    <a href="/logout" class="logout">Logout</a>
-</div>
+<h2>Dashboard</h2>
+<a href="/logout">Logout</a>
 
-<div class="container">
-
-<!-- ADD ITEM -->
 <div class="card">
-<h3>Add Item</h3>
-
-<form action="/add" method="POST">
-
-<input name="name" placeholder="Item Name" required>
-<input name="description" placeholder="Description" required>
-
+<form method="POST" action="/add">
+<input name="name" placeholder="Item name">
+<input name="description" placeholder="Description">
 <select name="type">
 <option value="lost">Lost</option>
 <option value="found">Found</option>
 </select>
-
-<button>Add Item</button>
-
+<button>Add</button>
 </form>
 </div>
 
-<!-- LOST & FOUND GRID -->
 <div class="grid">
 
-<!-- LOST -->
 <div class="card">
-<h3>🔴 Lost Items</h3>
-
+<h3>Lost</h3>
 {% for i in lost %}
-<div class="item">
-<p><b>{{i[1]}}</b></p>
-<p>{{i[2]}}</p>
-<a href="/delete/{{i[0]}}" class="delete">Delete</a>
-</div>
+<p>{{i[1]}} - {{i[2]}}</p>
+<a href="/delete/{{i[0]}}">Delete</a>
 {% endfor %}
-
 </div>
 
-<!-- FOUND -->
 <div class="card">
-<h3>🟢 Found Items</h3>
-
+<h3>Found</h3>
 {% for i in found %}
-<div class="item">
-<p><b>{{i[1]}}</b></p>
-<p>{{i[2]}}</p>
-<a href="/delete/{{i[0]}}" class="delete">Delete</a>
-</div>
+<p>{{i[1]}} - {{i[2]}}</p>
+<a href="/delete/{{i[0]}}">Delete</a>
 {% endfor %}
-
-</div>
-
 </div>
 
 </div>

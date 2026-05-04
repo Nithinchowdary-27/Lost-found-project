@@ -1,19 +1,25 @@
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+<style>
+body{background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial}
+.card{background:white;padding:30px;border-radius:15px;width:300px;text-align:center}
+input{width:100%;padding:10px;margin:10px 0}
+button{width:100%;padding:10px;background:#764ba2;color:white;border:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Register</h2>
 
-        conn = sqlite3.connect("/tmp/database.db")
-        c = conn.cursor()
+<form method="POST">
+<input name="username" placeholder="Username">
+<input name="password" placeholder="Password">
+<button>Register</button>
+</form>
 
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-
-        conn.commit()
-        conn.close()
-
-        print("User registered:", username)   # DEBUG
-
-        return redirect("/login")
-
-    return render_template("register.html")
+<a href="/login">Login</a>
+</div>
+</body>
+</html>

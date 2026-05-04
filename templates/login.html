@@ -1,25 +1,29 @@
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<style>
+body{background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial}
+.card{background:white;padding:30px;border-radius:15px;width:300px;text-align:center}
+input{width:100%;padding:10px;margin:10px 0}
+button{width:100%;padding:10px;background:#667eea;color:white;border:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Login</h2>
 
-        conn = sqlite3.connect("/tmp/database.db")
-        c = conn.cursor()
+{% if error %}
+<p style="color:red;">{{error}}</p>
+{% endif %}
 
-        c.execute("SELECT * FROM users")
-        all_users = c.fetchall()
-        print("All users:", all_users)   # DEBUG
+<form method="POST">
+<input name="username" placeholder="Username">
+<input name="password" placeholder="Password">
+<button>Login</button>
+</form>
 
-        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
-        user = c.fetchone()
-
-        conn.close()
-
-        if user:
-            session["user"] = username
-            return redirect("/dashboard")
-        else:
-            return "Invalid credentials"
-
-    return render_template("login.html")
+<a href="/register">Register</a>
+</div>
+</body>
+</html>

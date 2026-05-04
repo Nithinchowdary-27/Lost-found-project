@@ -1,14 +1,12 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
-import os
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# ---------------- DATABASE ----------------
-
+# ---------- DATABASE INIT ----------
 def init_db():
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("/tmp/database.db")
     c = conn.cursor()
 
     c.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -29,24 +27,22 @@ def init_db():
 
 init_db()
 
-# ---------------- HOME ----------------
-
+# ---------- HOME ----------
 @app.route("/")
 def home():
     return redirect("/login")
 
-# ---------------- REGISTER ----------------
-
-@app.route("/register", methods=["GET", "POST"])
+# ---------- REGISTER ----------
+@app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect("/tmp/database.db")
         c = conn.cursor()
 
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        c.execute("INSERT INTO users (username,password) VALUES (?,?)",(username,password))
 
         conn.commit()
         conn.close()
@@ -55,18 +51,17 @@ def register():
 
     return render_template("register.html")
 
-# ---------------- LOGIN ----------------
-
-@app.route("/login", methods=["GET", "POST"])
+# ---------- LOGIN ----------
+@app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect("/tmp/database.db")
         c = conn.cursor()
 
-        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        c.execute("SELECT * FROM users WHERE username=? AND password=?",(username,password))
         user = c.fetchone()
 
         conn.close()
@@ -75,32 +70,30 @@ def login():
             session["user"] = username
             return redirect("/dashboard")
         else:
-            return "Invalid credentials"
+            return render_template("login.html", error="Invalid credentials")
 
     return render_template("login.html")
 
-# ---------------- DASHBOARD ----------------
-
+# ---------- DASHBOARD ----------
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
         return redirect("/login")
 
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("/tmp/database.db")
     c = conn.cursor()
 
     c.execute("SELECT * FROM items WHERE type='lost'")
-    lost_items = c.fetchall()
+    lost = c.fetchall()
 
     c.execute("SELECT * FROM items WHERE type='found'")
-    found_items = c.fetchall()
+    found = c.fetchall()
 
     conn.close()
 
-    return render_template("dashboard.html", lost=lost_items, found=found_items)
+    return render_template("dashboard.html", lost=lost, found=found)
 
-# ---------------- ADD ITEM ----------------
-
+# ---------- ADD ITEM ----------
 @app.route("/add", methods=["POST"])
 def add():
     if "user" not in session:
@@ -110,38 +103,34 @@ def add():
     description = request.form["description"]
     type_ = request.form["type"]
 
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("/tmp/database.db")
     c = conn.cursor()
 
-    c.execute("INSERT INTO items (name, description, type) VALUES (?, ?, ?)",
-              (name, description, type_))
+    c.execute("INSERT INTO items (name,description,type) VALUES (?,?,?)",(name,description,type_))
 
     conn.commit()
     conn.close()
 
     return redirect("/dashboard")
 
-# ---------------- DELETE ----------------
-
+# ---------- DELETE ----------
 @app.route("/delete/<int:id>")
 def delete(id):
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("/tmp/database.db")
     c = conn.cursor()
 
-    c.execute("DELETE FROM items WHERE id=?", (id,))
+    c.execute("DELETE FROM items WHERE id=?",(id,))
     conn.commit()
     conn.close()
 
     return redirect("/dashboard")
 
-# ---------------- LOGOUT ----------------
-
+# ---------- LOGOUT ----------
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     return redirect("/login")
 
-# ---------------- RUN ----------------
-
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
