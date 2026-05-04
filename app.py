@@ -1,132 +1,147 @@
-from flask import Flask, render_template, request, redirect, session, url_for
-import json
+from flask import Flask, render_template, request, redirect, session
+import sqlite3
 import os
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# Files
-USER_FILE = "users.json"
-DATA_FILE = "data.json"
+# ---------------- DATABASE ----------------
 
-# Ensure files exist
-if not os.path.exists(USER_FILE):
-    with open(USER_FILE, "w") as f:
-        json.dump([], f)
+def init_db():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-if not os.path.exists(DATA_FILE):
-    with open(DATA_FILE, "w") as f:
-        json.dump([], f)
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT,
+                    password TEXT
+                )''')
 
-# Home → redirect to login
+    c.execute('''CREATE TABLE IF NOT EXISTS items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    description TEXT,
+                    type TEXT
+                )''')
+
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# ---------------- HOME ----------------
+
 @app.route("/")
 def home():
     return redirect("/login")
 
 # ---------------- REGISTER ----------------
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        with open(USER_FILE, "r") as f:
-            users = json.load(f)
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
 
-        # Check user exists
-        for user in users:
-            if user["username"] == username:
-                return "User already exists"
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
 
-        users.append({"username": username, "password": password})
-
-        with open(USER_FILE, "w") as f:
-            json.dump(users, f)
+        conn.commit()
+        conn.close()
 
         return redirect("/login")
 
     return render_template("register.html")
 
 # ---------------- LOGIN ----------------
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        with open(USER_FILE, "r") as f:
-            users = json.load(f)
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
 
-        for user in users:
-            if user["username"] == username and user["password"] == password:
-                session["user"] = username   # ✅ IMPORTANT
-                return redirect("/dashboard")
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        user = c.fetchone()
 
-        return "Invalid credentials"
+        conn.close()
+
+        if user:
+            session["user"] = username
+            return redirect("/dashboard")
+        else:
+            return "Invalid credentials"
 
     return render_template("login.html")
 
 # ---------------- DASHBOARD ----------------
+
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
         return redirect("/login")
 
-    with open(DATA_FILE, "r") as f:
-        items = json.load(f)
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-    lost_items = [i for i in items if i["type"] == "lost"]
-    found_items = [i for i in items if i["type"] == "found"]
+    c.execute("SELECT * FROM items WHERE type='lost'")
+    lost_items = c.fetchall()
+
+    c.execute("SELECT * FROM items WHERE type='found'")
+    found_items = c.fetchall()
+
+    conn.close()
 
     return render_template("dashboard.html", lost=lost_items, found=found_items)
 
 # ---------------- ADD ITEM ----------------
+
 @app.route("/add", methods=["POST"])
 def add():
     if "user" not in session:
         return redirect("/login")
 
     name = request.form["name"]
-    desc = request.form["description"]
-    item_type = request.form["type"]
+    description = request.form["description"]
+    type_ = request.form["type"]
 
-    with open(DATA_FILE, "r") as f:
-        items = json.load(f)
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-    items.append({
-        "name": name,
-        "description": desc,
-        "type": item_type
-    })
+    c.execute("INSERT INTO items (name, description, type) VALUES (?, ?, ?)",
+              (name, description, type_))
 
-    with open(DATA_FILE, "w") as f:
-        json.dump(items, f)
+    conn.commit()
+    conn.close()
 
     return redirect("/dashboard")
 
-# ---------------- DELETE ITEM ----------------
-@app.route("/delete/<int:index>")
-def delete(index):
-    if "user" not in session:
-        return redirect("/login")
+# ---------------- DELETE ----------------
 
-    with open(DATA_FILE, "r") as f:
-        items = json.load(f)
+@app.route("/delete/<int:id>")
+def delete(id):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-    if index < len(items):
-        items.pop(index)
-
-    with open(DATA_FILE, "w") as f:
-        json.dump(items, f)
+    c.execute("DELETE FROM items WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
 
     return redirect("/dashboard")
 
 # ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     return redirect("/login")
 
 # ---------------- RUN ----------------
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
