@@ -2,97 +2,169 @@
 <html>
 <head>
 <title>Dashboard</title>
+
 <style>
-body{
-    font-family:Arial;
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    color:white;
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
 }
-.container{
-    width:90%;
-    margin:auto;
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    color: white;
 }
-.card{
-    background:white;
-    color:black;
-    padding:15px;
-    border-radius:10px;
-    margin:10px;
+
+.logout {
+    background: white;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
 }
-.grid{
-    display:flex;
-    gap:20px;
+
+/* FORM */
+.form-box {
+    background: white;
+    width: 85%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
-.item{
-    background:#f1f1f1;
-    padding:10px;
-    border-radius:10px;
-    margin-top:10px;
+
+.form-box input,
+.form-box select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
-img{
-    width:100%;
-    height:150px;
-    object-fit:cover;
+
+.form-box button {
+    background: #4facfe;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
 }
-button{
-    padding:8px;
-    margin-top:5px;
+
+/* GRID */
+.grid {
+    width: 85%;
+    margin: 30px auto;
+    display: flex;
+    gap: 30px;
+}
+
+/* COLUMN */
+.column {
+    flex: 1;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ITEM CARD */
+.item {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+
+.item:hover {
+    transform: scale(1.03);
+}
+
+.item img {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.delete {
+    color: red;
+    text-decoration: none;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
-
-<h2>Dashboard</h2>
-<a href="/logout" style="color:white;">Logout</a>
-
-<div class="card">
-<form method="POST" action="/add" enctype="multipart/form-data">
-<input name="name" placeholder="Item Name" required>
-<input name="description" placeholder="Description" required>
-<input name="phone" placeholder="Mobile Number" required>
-
-<select name="type">
-<option value="lost">Lost</option>
-<option value="found">Found</option>
-</select>
-
-<input type="file" name="image" required>
-
-<button>Add Item</button>
-</form>
+<!-- HEADER -->
+<div class="header">
+    <h2>🔍 Lost & Found Dashboard</h2>
+    <a href="/logout" class="logout">Logout</a>
 </div>
 
+<!-- FORM -->
+<form method="POST" action="/add" enctype="multipart/form-data" class="form-box">
+    <input name="name" placeholder="Item Name" required>
+    <input name="description" placeholder="Description" required>
+    <input name="phone" placeholder="Mobile Number" required>
+
+    <select name="type">
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+    </select>
+
+    <input type="file" name="image" required>
+
+    <button>Add</button>
+</form>
+
+<!-- GRID -->
 <div class="grid">
 
+<!-- LOST -->
+<div class="column">
 <div class="card">
-<h3>Lost</h3>
+<h3>🔴 Lost Items</h3>
+
 {% for i in lost %}
 <div class="item">
 <img src="/{{i[4]}}">
 <p><b>{{i[1]}}</b></p>
 <p>{{i[2]}}</p>
 <p>📞 {{i[3]}}</p>
-<a href="/delete/{{i[0]}}">Delete</a>
+<a href="/delete/{{i[0]}}" class="delete">Delete</a>
 </div>
 {% endfor %}
+
+</div>
 </div>
 
+<!-- FOUND -->
+<div class="column">
 <div class="card">
-<h3>Found</h3>
+<h3>🟢 Found Items</h3>
+
 {% for i in found %}
 <div class="item">
 <img src="/{{i[4]}}">
 <p><b>{{i[1]}}</b></p>
 <p>{{i[2]}}</p>
 <p>📞 {{i[3]}}</p>
-<a href="/delete/{{i[0]}}">Delete</a>
+<a href="/delete/{{i[0]}}" class="delete">Delete</a>
 </div>
 {% endfor %}
-</div>
 
+</div>
 </div>
 
 </div>
