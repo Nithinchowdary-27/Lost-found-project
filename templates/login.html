@@ -1,12 +1,25 @@
-<!DOCTYPE html>
-<html>
-<body>
-<h2>Login</h2>
-<form method="POST">
-<input name="username" placeholder="Username" required><br>
-<input type="password" name="password" placeholder="Password" required><br>
-<button>Login</button>
-</form>
-<a href="/register">Register</a>
-</body>
-</html>
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM users")
+        all_users = c.fetchall()
+        print("All users:", all_users)   # DEBUG
+
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        user = c.fetchone()
+
+        conn.close()
+
+        if user:
+            session["user"] = username
+            return redirect("/dashboard")
+        else:
+            return "Invalid credentials"
+
+    return render_template("login.html")

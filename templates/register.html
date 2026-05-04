@@ -1,12 +1,19 @@
-<!DOCTYPE html>
-<html>
-<body>
-<h2>Register</h2>
-<form method="POST">
-<input name="username" placeholder="Username" required><br>
-<input type="password" name="password" placeholder="Password" required><br>
-<button>Register</button>
-</form>
-<a href="/login">Login</a>
-</body>
-</html>
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+
+        conn.commit()
+        conn.close()
+
+        print("User registered:", username)   # DEBUG
+
+        return redirect("/login")
+
+    return render_template("register.html")
